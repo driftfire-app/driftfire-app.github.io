@@ -1,0 +1,58 @@
+:root {
+  --bg: #070b14;
+  --panel: rgba(255, 255, 255, 0.03);
+  --text: #c5ccdb;
+  --head: #eef2fb;
+  --muted: #7c869c;
+  --accent: #43d6ff;
+  --border: rgba(120, 140, 180, 0.18);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font: 16px/1.7 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--text);
+  background: radial-gradient(1200px 800px at 50% -10%, #11203a 0%, #070b14 60%) no-repeat, var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+.wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 64px; }
+header.site {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0 24px; flex-wrap: wrap; gap: 8px;
+}
+header.site .brand {
+  font-weight: 700; color: var(--head); letter-spacing: 1.5px;
+  text-decoration: none; font-size: 18px;
+}
+header.site nav a { color: var(--muted); text-decoration: none; margin-left: 18px; font-size: 15px; }
+header.site nav a:hover { color: var(--accent); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { color: var(--head); font-size: 30px; line-height: 1.2; margin: 0.2em 0 0.4em; }
+h2 { color: var(--head); font-size: 20px; margin: 1.8em 0 0.5em; }
+.muted { color: var(--muted); }
+.hero { text-align: center; padding: 8px 0; }
+.hero img {
+  width: 180px; height: 180px; border-radius: 36px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); border: 1px solid var(--border);
+}
+.hero h1 { margin-top: 18px; }
+.lead { font-size: 18px; }
+.badge {
+  display: inline-block; margin-top: 10px; padding: 6px 14px;
+  border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: 13px;
+}
+.btns { margin: 22px 0 8px; }
+.btn {
+  display: inline-block; padding: 10px 18px; border: 1px solid var(--accent);
+  border-radius: 8px; color: var(--accent); margin: 6px 6px 0; font-weight: 600;
+}
+.btn:hover { background: rgba(67, 214, 255, 0.1); text-decoration: none; }
+.card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 2px 22px; margin: 18px 0; }
+hr { border: 0; border-top: 1px solid var(--border); margin: 32px 0; }
+footer.site {
+  color: var(--muted); font-size: 13px; text-align: center;
+  padding-top: 28px; border-top: 1px solid var(--border); margin-top: 40px;
+}
