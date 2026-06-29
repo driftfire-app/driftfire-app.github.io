@@ -20,6 +20,13 @@ public-facing site (served via **GitHub Pages**) and the community issue tracker
 | `assets/hero.png` | App-icon artwork |
 | `.github/ISSUE_TEMPLATE/` | Bug report + feature request templates |
 
+## Updating assets (cache-busting)
+
+GitHub Pages caches static assets by **filename**, so editing `hero.png` / `style.css` / a font in
+place can leave visitors (and the CDN) on the **old** version. When you change a committed asset,
+**bump the `?v=N` query** on its references in the HTML (and CSS `@font-face`) — a new URL forces
+browsers and the CDN to refetch. (Bumping the number is the whole trick; any new value works.)
+
 ## Custom domain (later)
 
 When `driftfire.app` is registered, add it under **Settings → Pages → Custom domain** (and a `CNAME`
