@@ -61,3 +61,35 @@ footer.site {
   color: var(--muted); font-size: 13px; text-align: center;
   padding-top: 28px; border-top: 1px solid var(--border); margin-top: 40px;
 }
+header.site nav a[aria-current="page"] { color: var(--head); }
+
+/* --- Asteroid terrain gallery (gallery.html) --- */
+.wrap-wide { max-width: 940px; }
+h2.section {
+  font-family: "Audiowide", system-ui, sans-serif;
+  color: var(--accent); font-size: 14px; letter-spacing: 1.5px; text-transform: uppercase;
+  margin: 2.6em 0 0.6em; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.style { margin: 0 0 26px; }
+.style-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.style-head h3 { color: var(--head); font-size: 18px; margin: 0; }
+.tag {
+  font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 2px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted);
+}
+.tag-rec { border-color: var(--accent); color: var(--accent); }
+.style .desc { margin: 8px 0 12px; }
+/* One sample board per style, shown at a fixed preview width; max-width:100% caps it on a phone. */
+.shots img {
+  width: 320px; max-width: 100%; height: auto; display: block; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg);
+}
+
+/* Home-page gallery teaser — a 3-across grid. minmax(0, 1fr), not 1fr: 1fr tracks keep
+   min-width:auto, so the images' intrinsic width would force the grid wider than a phone viewport
+   and scroll the page sideways. */
+.teaser-shots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 16px 0; }
+.teaser-shots img {
+  width: 100%; height: auto; display: block; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--bg);
+}
