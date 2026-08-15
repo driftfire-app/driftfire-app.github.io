@@ -100,9 +100,6 @@ header.site nav a[aria-current="page"] { color: var(--head); }
   border: 1px solid var(--border); background: var(--bg);
 }
 
-/* Under the store buttons: the Android closed-testing caveat. */
-.beta-note { font-size: 13px; margin: 6px auto 0; max-width: 46ch; }
-
 /* Home-page gameplay screenshots — a horizontal, swipeable shelf. Phone shots are tall (9:16), so a
    scroll-snap row keeps each one legible on a phone (one image plus a peek of the next, native
    swipe) instead of shrinking a desktop row to illegibility or blowing up the page height. The row
