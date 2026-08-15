@@ -6,6 +6,7 @@
   --muted: #7c869c;
   --accent: #43d6ff;
   --border: rgba(120, 140, 180, 0.18);
+  --warn: #ffcf4a;
 }
 @font-face {
   font-family: "Audiowide";
@@ -56,6 +57,16 @@ h2 { color: var(--head); font-size: 20px; margin: 1.8em 0 0.5em; }
 }
 .btn:hover { background: rgba(67, 214, 255, 0.1); text-decoration: none; }
 .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 2px 22px; margin: 18px 0; }
+
+/* Warning callout — a yellow-tinted card with an inline-SVG warning icon (no icon font needed). */
+.callout-warn {
+  display: flex; gap: 12px; align-items: flex-start; padding: 16px 20px;
+  border-color: rgba(255, 207, 74, 0.45); background: rgba(255, 207, 74, 0.08);
+}
+.callout-warn .callout-icon { flex: 0 0 auto; color: var(--warn); line-height: 0; margin-top: 2px; }
+.callout-warn .callout-icon svg { display: block; width: 22px; height: 22px; }
+.callout-warn p { margin: 0; }
+.callout-warn strong { color: var(--warn); }
 hr { border: 0; border-top: 1px solid var(--border); margin: 32px 0; }
 footer.site {
   color: var(--muted); font-size: 13px; text-align: center;
@@ -98,4 +109,19 @@ header.site nav a[aria-current="page"] { color: var(--head); }
 .teaser-shots img {
   width: 100%; height: auto; display: block; border-radius: 8px;
   border: 1px solid var(--border); background: var(--bg);
+}
+
+/* Home-page gameplay screenshots — a horizontal, swipeable shelf. Phone shots are tall (9:16), so a
+   scroll-snap row keeps each one legible on a phone (one image plus a peek of the next, native
+   swipe) instead of shrinking a desktop row to illegibility or blowing up the page height. The row
+   scrolls sideways INSIDE itself; the page body never does. */
+.shots-shelf {
+  display: flex; gap: 12px; margin: 16px 0; padding-bottom: 10px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+}
+.shots-shelf img {
+  flex: 0 0 auto; width: 220px; max-width: 78vw; height: auto; scroll-snap-align: start;
+  border-radius: 10px; border: 1px solid var(--border); background: var(--bg);
 }
