@@ -1,0 +1,215 @@
+{
+  "title": "Same brief, different burden",
+  "subtitle": "Claude Opus 4.8 vs Codex gpt-5.6-sol on Driftfire custom boards",
+  "snapshot_date": "2026-08-19",
+  "verdict": {
+    "winner": "codex",
+    "headline": "Codex won this run",
+    "reason": "It reached dependable integration with fewer human correctness interventions, cleaner boundaries, stronger network tests, and more effective visual verification.",
+    "developer_outcome": "Codex became the developer's primary model after this run."
+  },
+  "models": {
+    "claude": {
+      "display": "Claude",
+      "model": "Opus 4.8",
+      "harness": "Claude Code",
+      "branch": "feat/custom-drawn-boards",
+      "pr": 596,
+      "head": "797c7f9a",
+      "commits": 33,
+      "files_changed": 57,
+      "insertions": 4488,
+      "deletions": 70,
+      "plan_lines": 658,
+      "app_gd_additions": 58,
+      "comment_density_per_100_lines": "about 23",
+      "reported_coverage": "88.2%"
+    },
+    "codex": {
+      "display": "Codex",
+      "model": "gpt-5.6-sol",
+      "effort": "medium",
+      "harness": "Codex CLI",
+      "branch": "feat/custom-drawn-boards-codex",
+      "pr": 598,
+      "head": "d1166ded",
+      "commits": 34,
+      "files_changed": 96,
+      "insertions": 5284,
+      "deletions": 80,
+      "plan_lines": 193,
+      "app_gd_additions": 24,
+      "comment_density_per_100_lines": "about 2–5",
+      "reported_coverage": "88.1% on last full verified head; later feel-tuning focused checks still in progress"
+    }
+  },
+  "phases": [
+    {
+      "id": "opening_brief",
+      "name": "Identical opening brief",
+      "winner": "codex",
+      "summary": "Both solved the data model; Codex carried it through rendering, local multitouch, and production transforms with less human intervention.",
+      "comparisons": [
+        {
+          "requirement": "Style, exclusions, component and texture rules",
+          "claude": "correct",
+          "codex": "correct"
+        },
+        {
+          "requirement": "Local two-player multitouch",
+          "claude": "implemented after developer reminder",
+          "codex": "present in the first draft model"
+        },
+        {
+          "requirement": "First working render",
+          "claude": "black screen, then gray rock and wrong background until device reports",
+          "codex": "real starfield and rock textures in first verified render"
+        },
+        {
+          "requirement": "Visual verification",
+          "claude": "reported success while missing a device-visible failure",
+          "codex": "framebuffer matrix caught an invalid production-mapping test"
+        }
+      ]
+    },
+    {
+      "id": "chosen_scope",
+      "name": "Product choices",
+      "winner": "mixed",
+      "summary": "Both added persistence and Uplink support, but the answers and resulting scope differed, so a flat requirement score is misleading."
+    },
+    {
+      "id": "later_additions",
+      "name": "Later additions",
+      "winner": "codex",
+      "summary": "Codex's live co-editing converges byte-identically and now handles joiner rotation. Claude's joiner remains unrotated and simultaneous remote drawing crashes on device."
+    }
+  ],
+  "human_reports": {
+    "claude": [
+      "drawing screen rendered off-black",
+      "generation settings remained visible for the custom style",
+      "rock became gray while drawing and the background was not the starfield",
+      "required local multitouch was absent",
+      "Uplink skipped board creation and started an empty match",
+      "Draw/Erase overlapped Play",
+      "Uplink joiner canvas remained unrotated",
+      "simultaneous Uplink drawing crashed",
+      "latest observed iOS build produced dots but not dragged lines"
+    ],
+    "codex": [
+      "first library UI did not match the established settings screen",
+      "first live co-edit canvas did not rotate for the joiner",
+      "first native iOS bridge caused a Web parse failure"
+    ],
+    "codex_feel_calibration_not_correctness": [
+      "make ordinary iOS width changes more responsive",
+      "retain initial contact width while dragging",
+      "make a flat thumb visibly wider",
+      "allow progressively thinner light touches"
+    ]
+  },
+  "craft": [
+    {
+      "dimension": "Plan",
+      "claude": "658-line prescriptive implementation script with embedded code",
+      "codex": "193-line staged checklist with file-conflict map",
+      "winner": "codex"
+    },
+    {
+      "dimension": "Pull request",
+      "claude": "long subsystem prose",
+      "codex": "short named sections and bullets",
+      "winner": "codex"
+    },
+    {
+      "dimension": "App integration",
+      "claude": "58 added lines; app probes geometry and writes drawing state",
+      "codex": "24 added lines; app delegates to CustomBoardFlow",
+      "winner": "codex"
+    },
+    {
+      "dimension": "Architecture",
+      "claude": "844-line screen owns input, paint, render, controls, persistence UI, and networking",
+      "codex": "editor, pure draft, flow, and network coordinator have explicit ownership",
+      "winner": "codex"
+    },
+    {
+      "dimension": "Engine fidelity",
+      "claude": "reuses DestructibleField painting and has antialiased fractional edges",
+      "codex": "pure GDScript authoring rasterizer must remain faithful to match terrain",
+      "winner": "claude"
+    },
+    {
+      "dimension": "Initial UI",
+      "claude": "rough and partly nonfunctional",
+      "codex": "rough until redirected to existing settings patterns",
+      "winner": "neither"
+    }
+  ],
+  "tests": {
+    "shared": [
+      "shape identity and texture cycling",
+      "extend, bridge, and erase-split behavior",
+      "Random and gallery exclusions",
+      "snapshot round-trip",
+      "spawn protection",
+      "global Draw/Erase state",
+      "persistence basics"
+    ],
+    "codex_unique_strengths": [
+      "joiner presentation plus inverse screen-to-board mapping",
+      "byte-identical host/joiner convergence",
+      "remote touch-ID namespace separation",
+      "letterbox and pillarbox input mapping",
+      "snapshot-zero settings isolation",
+      "transport loss during authoring",
+      "atomic persistence and corrupt-entry recovery"
+    ],
+    "claude_unique_strengths": [
+      "fractional rim texture inheritance",
+      "rotated local-two-player toggle hit testing"
+    ],
+    "weakness": "Claude's remote co-draw test injects board coordinates and compares solid-cell count, so it cannot catch wrong joiner mapping or different boards with equal area."
+  },
+  "timing": {
+    "method": "Earlier session-log estimate: elapsed working span minus waits for user input, through the evaluator's comparable cutoffs.",
+    "claude_hours": 8.7,
+    "codex_hours": 4.1,
+    "warning": "Directional only. Later Codex iOS feel calibration is outside the cutoff, and logs do not measure focused human-equivalent labor."
+  },
+  "quotes": [
+    {
+      "topic": "verdict",
+      "text": "After this experience, Codex is clearly the winner, and it's going to become my primary model going forward."
+    },
+    {
+      "topic": "integration",
+      "text": "The user repeatedly became the integration test."
+    },
+    {
+      "topic": "pr",
+      "text": "Codex's PR description is better organized. I like the bullet points and the structure and the succinctness."
+    },
+    {
+      "topic": "plans",
+      "text": "Codex's plan seems more like a high-level checklist ... it should be read together with the design, whereas Claude's plan seems to supplant the design."
+    },
+    {
+      "topic": "comments",
+      "text": "Codex uses a lot fewer comments, which I like because its code speaks for itself."
+    },
+    {
+      "topic": "architecture",
+      "text": "Codex is using cleaner patterns."
+    }
+  ],
+  "caveats": [
+    "The model tiers and effort settings were not matched.",
+    "The opening prompt was identical, but later product answers and requests differed.",
+    "Both agents used Claude and Codex reviewers, so final work is not unaided.",
+    "The environments and start times differed.",
+    "This is one feature, one developer, and one run—not a general benchmark.",
+    "Current heads include different later scope and should not be compared by diff size."
+  ]
+}

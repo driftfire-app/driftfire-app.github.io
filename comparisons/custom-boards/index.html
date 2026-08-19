@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An evidence-led comparison of Claude Opus 4.8 and Codex gpt-5.6-sol implementing custom-drawn asteroid boards in Driftfire.">
+  <link rel="canonical" href="https://driftfire.app/comparisons/custom-boards/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Same brief, different burden — Claude vs Codex">
+  <meta property="og:description" content="Two coding agents built the same Driftfire feature. Codex reached the more dependable implementation with less human integration testing.">
+  <meta property="og:url" content="https://driftfire.app/comparisons/custom-boards/">
+  <meta property="og:image" content="https://driftfire.app/comparisons/custom-boards/assets/driftfire-key-art.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>Same brief, different burden — Claude vs Codex</title>
+  <style>
+    @font-face {
+      font-family: "Audiowide";
+      src: url("assets/Audiowide-Regular.ttf") format("truetype");
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Exo 2";
+      src: url("assets/Exo2.ttf") format("truetype");
+      font-display: swap;
+    }
+    @font-face {
+      font-family: "Chakra Petch";
+      src: url("assets/ChakraPetch-Regular.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    :root {
+      color-scheme: dark;
+      --void: #05070d;
+      --void-soft: #090d17;
+      --hull: #111827;
+      --hull-2: #182235;
+      --line: #2a3750;
+      --line-soft: #1b2639;
+      --white: #eef4ff;
+      --muted: #a6b3c8;
+      --dim: #77859d;
+      --ion: #2f6bff;
+      --ion-soft: #70a0ff;
+      --burn: #ff6b1a;
+      --burn-soft: #ffad72;
+      --gold: #f6c945;
+      --green: #5fe39b;
+      --red: #ff6477;
+      --shadow: rgba(0, 0, 0, 0.45);
+      --display: "Audiowide", "Arial Black", sans-serif;
+      --body: "Exo 2", system-ui, sans-serif;
+      --utility: "Chakra Petch", ui-monospace, monospace;
+      --content: 1180px;
+      --reading: 720px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--void); }
+    body {
+      margin: 0;
+      background: var(--void);
+      color: var(--white);
+      font-family: var(--body);
+      font-size: 18px;
+      line-height: 1.62;
+    }
+    img { display: block; max-width: 100%; }
+    a { color: var(--ion-soft); text-underline-offset: 0.18em; }
+    a:hover { color: var(--white); }
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 4px;
+    }
+    h1, h2, h3, p, blockquote { margin: 0; }
+    h1, h2, h3 { text-wrap: balance; }
+    button { font: inherit; }
+
+    .skip-link {
+      position: fixed;
+      left: 16px;
+      top: -80px;
+      z-index: 30;
+      background: var(--white);
+      color: var(--void);
+      padding: 10px 14px;
+    }
+    .skip-link:focus { top: 16px; }
+
+    .site-nav {
+      position: fixed;
+      z-index: 20;
+      inset: 0 0 auto;
+      border-bottom: 1px solid rgba(238, 244, 255, 0.12);
+      background: rgba(5, 7, 13, 0.82);
+      backdrop-filter: blur(18px);
+    }
+    .nav-inner {
+      max-width: var(--content);
+      margin: 0 auto;
+      min-height: 62px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      text-decoration: none;
+      font-family: var(--display);
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+    }
+    .brand img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 20px rgba(47, 107, 255, 0.4);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-family: var(--utility);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .nav-links a { color: var(--muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--white); }
+
+    .hero {
+      min-height: 92vh;
+      position: relative;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--void);
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -3;
+      inset: 0;
+      background: url("assets/driftfire-key-art.png") 64% 49% / cover no-repeat;
+      filter: saturate(0.92) contrast(1.05);
+      transform: scale(1.015);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(5, 7, 13, 0.98) 0%, rgba(5, 7, 13, 0.86) 39%, rgba(5, 7, 13, 0.2) 70%),
+        linear-gradient(0deg, var(--void) 0%, transparent 35%, rgba(5, 7, 13, 0.28) 100%);
+    }
+    .hero-inner {
+      width: min(100%, var(--content));
+      margin: 0 auto;
+      padding: 132px 24px 74px;
+      display: grid;
+      grid-template-columns: minmax(0, 720px) 1fr;
+      align-items: end;
+      gap: 54px;
+    }
+    .hero-copy { min-width: 0; }
+    .eyebrow {
+      font-family: var(--utility);
+      font-size: 0.76rem;
+      line-height: 1.3;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--ion-soft);
+    }
+    .hero h1 {
+      margin-top: 14px;
+      max-width: 760px;
+      font-family: var(--display);
+      font-size: clamp(2.8rem, 7.8vw, 6.9rem);
+      line-height: 0.96;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-shadow: 0 8px 42px var(--shadow);
+    }
+    .hero h1 span { color: var(--burn-soft); }
+    .hero-deck {
+      margin-top: 25px;
+      max-width: 650px;
+      color: var(--white);
+      font-size: clamp(1.05rem, 2vw, 1.34rem);
+      line-height: 1.48;
+      text-shadow: 0 2px 18px var(--void);
+    }
+    .hero-meta {
+      margin-top: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      font-family: var(--utility);
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .hero-meta span { display: inline-flex; align-items: center; gap: 8px; }
+    .hero-meta span::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: var(--ion);
+      transform: rotate(45deg);
+    }
+
+    .winner-lockup {
+      justify-self: end;
+      align-self: end;
+      width: min(260px, 32vw);
+      display: grid;
+      justify-items: center;
+      filter: drop-shadow(0 18px 35px var(--shadow));
+    }
+    .winner-icon {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+    }
+    .winner-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .crown {
+      position: absolute;
+      z-index: 2;
+      width: 49%;
+      height: 34%;
+      top: -16%;
+      left: 27%;
+      background: linear-gradient(150deg, #fff0a0, var(--gold) 48%, #d69312);
+      clip-path: polygon(4% 26%, 30% 58%, 49% 5%, 68% 58%, 96% 22%, 83% 88%, 17% 88%);
+      transform: rotate(7deg);
+      box-shadow: 0 0 35px rgba(246, 201, 69, 0.55);
+    }
+    .crown::after {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      bottom: 4%;
+      height: 10%;
+      background: var(--white);
+      opacity: 0.55;
+    }
+    .winner-label {
+      margin-top: 12px;
+      font-family: var(--utility);
+      font-size: 0.86rem;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .band { border-top: 1px solid var(--line-soft); }
+    .band-inner {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 88px 24px;
+    }
+    .band-quiet { background: var(--void-soft); }
+    .band-hull { background: var(--hull); }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+      gap: 56px;
+      align-items: start;
+      margin-bottom: 48px;
+    }
+    .section-head h2 {
+      margin-top: 10px;
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: clamp(2rem, 4.8vw, 4rem);
+      line-height: 1.04;
+    }
+    .section-head p {
+      max-width: var(--reading);
+      color: var(--muted);
+      font-size: 1.08rem;
+    }
+
+    .verdict-strip {
+      background: linear-gradient(90deg, rgba(47, 107, 255, 0.17), rgba(17, 24, 39, 0.92) 52%, rgba(255, 107, 26, 0.12));
+    }
+    .verdict-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 56px;
+      align-items: center;
+    }
+    .verdict-copy h2 {
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 5vw, 4.6rem);
+      font-weight: 400;
+      line-height: 1.02;
+    }
+    .verdict-copy h2 span { color: var(--gold); }
+    .verdict-copy p {
+      max-width: 760px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+    .verdict-note {
+      border-left: 4px solid var(--gold);
+      padding: 20px 0 20px 28px;
+      font-size: 1.16rem;
+      line-height: 1.5;
+      color: var(--white);
+    }
+    .verdict-note cite {
+      display: block;
+      margin-top: 14px;
+      color: var(--gold);
+      font-family: var(--utility);
+      font-size: 0.76rem;
+      font-style: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .setup-item { padding: 28px 28px 30px 0; }
+    .setup-item + .setup-item { border-left: 1px solid var(--line); padding-left: 28px; }
+    .setup-index {
+      font-family: var(--utility);
+      font-size: 0.76rem;
+      color: var(--burn-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .setup-item h3 { margin-top: 10px; font-size: 1.28rem; line-height: 1.2; }
+    .setup-item p { margin-top: 10px; color: var(--muted); font-size: 0.94rem; }
+    .caveat {
+      margin-top: 30px;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.025);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .phase-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      overflow-x: auto;
+    }
+    .phase-tab {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 15px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: var(--utility);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .phase-tab[aria-selected="true"] {
+      color: var(--white);
+      border-color: var(--ion);
+      background: rgba(47, 107, 255, 0.16);
+    }
+    .phase-panel { display: none; }
+    .phase-panel.active { display: block; }
+    .phase-summary {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 32px;
+      padding: 26px 0;
+      border-top: 1px solid var(--line);
+    }
+    .phase-summary:last-child { border-bottom: 1px solid var(--line); }
+    .phase-summary h3 { font-size: 1rem; color: var(--white); }
+    .phase-summary p { color: var(--muted); }
+    .status {
+      display: inline-block;
+      margin-top: 9px;
+      font-family: var(--utility);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .status.codex { color: var(--green); }
+    .status.mixed { color: var(--gold); }
+
+    .integration-quote {
+      position: relative;
+      padding: 62px 0 42px;
+      max-width: 1000px;
+      font-family: var(--display);
+      font-size: clamp(2rem, 5.2vw, 4.7rem);
+      font-weight: 400;
+      line-height: 1.13;
+      color: var(--white);
+    }
+    .integration-quote span { color: var(--burn-soft); }
+    .integration-caption {
+      max-width: var(--reading);
+      margin-left: auto;
+      padding-bottom: 52px;
+      color: var(--muted);
+      font-size: 1.07rem;
+    }
+    .failure-sequence {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .failure {
+      background: var(--void-soft);
+      padding: 24px;
+      min-height: 166px;
+    }
+    .failure .tag {
+      font-family: var(--utility);
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      color: var(--red);
+    }
+    .failure h3 { margin-top: 12px; font-size: 1.08rem; }
+    .failure p { margin-top: 8px; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
+
+    .craft-rows { border-top: 1px solid var(--line); }
+    .craft-row {
+      display: grid;
+      grid-template-columns: 180px 1fr 1fr;
+      gap: 26px;
+      padding: 25px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .craft-label {
+      font-family: var(--utility);
+      color: var(--burn-soft);
+      font-size: 0.77rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .craft-side strong { display: block; color: var(--white); }
+    .craft-side p { margin-top: 5px; color: var(--muted); font-size: 0.92rem; }
+    .craft-side.codex strong::after {
+      content: "  winner";
+      color: var(--green);
+      font-family: var(--utility);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .architecture {
+      margin-top: 52px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .architecture > section {
+      border-top: 3px solid var(--dim);
+      padding-top: 18px;
+    }
+    .architecture > section:last-child { border-color: var(--ion); }
+    .architecture h3 { font-family: var(--utility); text-transform: uppercase; letter-spacing: 0.09em; }
+    .flow {
+      margin-top: 18px;
+      display: grid;
+      gap: 8px;
+    }
+    .node {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: var(--void-soft);
+      font-family: var(--utility);
+      font-size: 0.78rem;
+    }
+    .node.hot { border-color: var(--burn); }
+    .node.clean { border-color: var(--ion); }
+    .node small { display: block; color: var(--muted); margin-top: 3px; }
+    .arrow { color: var(--dim); text-align: center; line-height: 1; }
+
+    .field-note {
+      margin: 48px 0;
+      border-left: 3px solid var(--ion);
+      padding: 22px 26px;
+      background: rgba(47, 107, 255, 0.08);
+      max-width: 850px;
+    }
+    .field-note p { font-size: 1.14rem; }
+    .field-note footer {
+      margin-top: 12px;
+      color: var(--ion-soft);
+      font-family: var(--utility);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+
+    .test-grid {
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 36px;
+    }
+    .test-column { border-top: 3px solid var(--dim); padding-top: 20px; }
+    .test-column.codex { border-color: var(--ion); }
+    .test-column h3 { font-family: var(--utility); text-transform: uppercase; letter-spacing: 0.08em; }
+    .test-list { list-style: none; padding: 0; margin: 18px 0 0; }
+    .test-list li {
+      position: relative;
+      padding: 12px 0 12px 24px;
+      border-bottom: 1px solid var(--line-soft);
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+    .test-list li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-family: var(--utility);
+    }
+    .test-warning {
+      margin-top: 28px;
+      padding: 20px 22px;
+      border: 1px solid rgba(255, 107, 26, 0.45);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .test-warning strong { color: var(--burn-soft); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .metric { background: var(--void-soft); padding: 26px 22px; }
+    .metric-label {
+      font-family: var(--utility);
+      font-size: 0.69rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .metric-values {
+      margin-top: 14px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .metric-values strong { font-size: 2rem; line-height: 1; }
+    .metric-values span { color: var(--ion-soft); font-family: var(--utility); font-size: 0.72rem; }
+    .metric-values .claude { color: var(--muted); }
+    .metric-note { margin-top: 10px; color: var(--dim); font-size: 0.78rem; line-height: 1.4; }
+
+    .bottom-line {
+      text-align: left;
+      max-width: 980px;
+    }
+    .bottom-line h2 {
+      font-family: var(--display);
+      font-size: clamp(2.4rem, 6vw, 5.5rem);
+      font-weight: 400;
+      line-height: 1.04;
+    }
+    .bottom-line h2 span { color: var(--gold); }
+    .bottom-line p { max-width: var(--reading); margin-top: 25px; color: var(--muted); font-size: 1.08rem; }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      background: #03050a;
+    }
+    .footer-inner {
+      max-width: var(--content);
+      margin: 0 auto;
+      padding: 38px 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      color: var(--dim);
+      font-size: 0.82rem;
+    }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 14px 22px; }
+
+    @media (max-width: 900px) {
+      body { font-size: 17px; }
+      .nav-links a:not(:last-child) { display: none; }
+      .hero { min-height: 820px; }
+      .hero-inner { grid-template-columns: 1fr; gap: 30px; }
+      .winner-lockup { position: absolute; width: 128px; right: 24px; top: 112px; }
+      .winner-label { font-size: 0.62rem; }
+      .hero-copy { padding-top: 110px; }
+      .hero h1 { max-width: 620px; padding-right: 80px; }
+      .section-head, .verdict-grid { grid-template-columns: 1fr; gap: 24px; }
+      .setup-grid { grid-template-columns: 1fr; }
+      .setup-item, .setup-item + .setup-item { padding: 22px 0; border-left: 0; border-top: 1px solid var(--line); }
+      .setup-item:first-child { border-top: 0; }
+      .failure-sequence { grid-template-columns: 1fr 1fr; }
+      .craft-row { grid-template-columns: 120px 1fr 1fr; }
+      .metrics { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .nav-inner { min-height: 56px; padding: 0 16px; }
+      .nav-links { display: none; }
+      .hero { min-height: 760px; }
+      .hero-inner { padding: 118px 16px 54px; }
+      .hero-copy { padding-top: 92px; }
+      .hero::before { background-position: 57% 50%; }
+      .hero::after {
+        background:
+          linear-gradient(90deg, rgba(5, 7, 13, 0.97), rgba(5, 7, 13, 0.66)),
+          linear-gradient(0deg, var(--void) 0%, transparent 45%);
+      }
+      .winner-lockup { width: 96px; right: 15px; top: 91px; }
+      .hero h1 {
+        padding-right: 0;
+        font-size: clamp(2.3rem, 11.2vw, 3.6rem);
+        overflow-wrap: anywhere;
+      }
+      .hero-deck { font-size: 1rem; }
+      .band-inner { padding: 64px 16px; }
+      .phase-summary { grid-template-columns: 1fr; gap: 8px; }
+      .failure-sequence, .architecture, .test-grid, .metrics { grid-template-columns: 1fr; }
+      .craft-row { grid-template-columns: 1fr; gap: 10px; }
+      .craft-side { padding-left: 16px; border-left: 1px solid var(--line); }
+      .integration-quote { padding-top: 24px; }
+      .footer-inner { flex-direction: column; padding-inline: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to analysis</a>
+
+  <nav class="site-nav" aria-label="Artifact sections">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <img src="assets/driftfire-key-art.png" alt="">
+        <span>Driftfire field report</span>
+      </a>
+      <div class="nav-links">
+        <a href="#setup">Setup</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#craft">Craft</a>
+        <a href="#tests">Tests</a>
+        <a href="analysis.md">Full analysis</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <div class="eyebrow">Claude Opus 4.8 vs Codex gpt-5.6-sol</div>
+        <h1>Same brief.<br><span>Different burden.</span></h1>
+        <p class="hero-deck">Two coding agents built the same finger-drawn asteroid-board feature. Codex reached the more dependable implementation with less human integration testing—and became the developer's primary model.</p>
+        <div class="hero-meta">
+          <span>One real mobile game</span>
+          <span>Separate worktrees</span>
+          <span>Evidence snapshot · 19 Aug 2026</span>
+        </div>
+      </div>
+      <div class="winner-lockup" aria-label="Codex, winner of this comparison">
+        <div class="winner-icon">
+          <div class="crown" aria-hidden="true"></div>
+          <img src="assets/codex-app-icon.png" alt="Codex app icon">
+        </div>
+        <div class="winner-label">Winner · this run</div>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="band verdict-strip" aria-labelledby="verdict-title">
+      <div class="band-inner verdict-grid">
+        <div class="verdict-copy">
+          <div class="eyebrow">The outcome</div>
+          <h2 id="verdict-title"><span>Codex won.</span><br>Not because it was flawless.</h2>
+          <p>It won because fewer correctness failures reached the developer, its verification exercised the real product, and its architecture made the drawing model, screen, network order, and app lifecycle independently testable.</p>
+        </div>
+        <blockquote class="verdict-note">
+          “After this experience, Codex is clearly the winner, and it's going to become my primary model going forward.”
+          <cite>The developer, after using both builds</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="band band-quiet" id="setup" aria-labelledby="setup-title">
+      <div class="band-inner">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">The setup</div>
+            <h2 id="setup-title">A real feature, not a toy prompt</h2>
+          </div>
+          <p>Driftfire normally generates its asteroid field. The assignment was to let players paint that field with a finger before a match: connected strokes become textured asteroids, erase removes rock, and two local players can draw simultaneously.</p>
+        </div>
+        <div class="setup-grid">
+          <article class="setup-item">
+            <div class="setup-index">Input</div>
+            <h3>The same opening brief</h3>
+            <p>Both agents received the developer's complete request plus the same 12 KB engineering brief with named correctness traps.</p>
+          </article>
+          <article class="setup-item">
+            <div class="setup-index">Environment</div>
+            <h3>Independent worktrees</h3>
+            <p>Each agent implemented on its own branch, opened a pull request, and used the project's mandatory Claude and Codex reviewers.</p>
+          </article>
+          <article class="setup-item">
+            <div class="setup-index">Measure</div>
+            <h3>Burden on the developer</h3>
+            <p>The useful question was not who emitted more code, but what survived into a working build without human correction.</p>
+          </article>
+        </div>
+        <p class="caveat"><strong>Caveat:</strong> this is an evidence-backed case study, not a benchmark. The models, effort settings, environments, start times, reviewer influence, and later product conversations were not matched.</p>
+      </div>
+    </section>
+
+    <section class="band" id="evidence" aria-labelledby="phase-title">
+      <div class="band-inner">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Three phases</div>
+            <h2 id="phase-title">Scope changed after the start</h2>
+          </div>
+          <p>A flat score hides the most important methodological fact: the opening prompt was identical, but the later conversations were not. Persistence, basic Uplink support, live remote co-editing, and native iOS touch width must be read in sequence.</p>
+        </div>
+
+        <div class="phase-tabs" role="tablist" aria-label="Comparison phases">
+          <button class="phase-tab" role="tab" id="tab-core" aria-controls="panel-core" aria-selected="true">1 · Opening brief</button>
+          <button class="phase-tab" role="tab" id="tab-scope" aria-controls="panel-scope" aria-selected="false">2 · Product scope</button>
+          <button class="phase-tab" role="tab" id="tab-later" aria-controls="panel-later" aria-selected="false">3 · Later additions</button>
+        </div>
+
+        <div class="phase-panel active" id="panel-core" role="tabpanel" aria-labelledby="tab-core">
+          <div class="phase-summary">
+            <div><h3>Core data model</h3><span class="status mixed">Both strong</span></div>
+            <p>Both appended a safe style value, excluded it from Random, and correctly implemented connected shapes, texture cycling, extension, oldest-texture bridges, and same-texture erase splits.</p>
+          </div>
+          <div class="phase-summary">
+            <div><h3>Local multitouch</h3><span class="status codex">Codex</span></div>
+            <p>Claude's design named it but its first implementation deferred it; the developer had to repeat that it was required. Codex modeled simultaneous touches from the start.</p>
+          </div>
+          <div class="phase-summary">
+            <div><h3>First render</h3><span class="status codex">Codex</span></div>
+            <p>Claude first produced an off-black screen, then gray asteroids and the wrong background. Codex's first verified canvas used the real starfield and rock textures.</p>
+          </div>
+          <div class="phase-summary">
+            <div><h3>Verification</h3><span class="status codex">Codex</span></div>
+            <p>Claude's visual check missed a device-visible blank screen. Codex's framebuffer matrix found that a mapping test exercised an unused helper and replaced it with production-path coverage.</p>
+          </div>
+        </div>
+
+        <div class="phase-panel" id="panel-scope" role="tabpanel" aria-labelledby="tab-scope" hidden>
+          <div class="phase-summary">
+            <div><h3>Persistence</h3><span class="status mixed">Different products</span></div>
+            <p>Claude built a richer four-recent-plus-saved library. Codex built a simpler named library. Both needed reviewer hardening; Codex ultimately tested atomic and corrupt-data paths more deeply.</p>
+          </div>
+          <div class="phase-summary">
+            <div><h3>Uplink support</h3><span class="status mixed">Different answers</span></div>
+            <p>Claude moved toward live co-editing. Codex initially used host authoring plus snapshot transfer. “Supports Uplink” was no longer one identical requirement.</p>
+          </div>
+          <div class="phase-summary">
+            <div><h3>Initial UI</h3><span class="status mixed">Neither</span></div>
+            <p>Both first interfaces were poor. Claude's was rough and partly broken. Codex's library became polished only after the developer pointed it to the existing settings screen.</p>
+          </div>
+        </div>
+
+        <div class="phase-panel" id="panel-later" role="tabpanel" aria-labelledby="tab-later" hidden>
+          <div class="phase-summary">
+            <div><h3>Remote co-edit</h3><span class="status codex">Codex</span></div>
+            <p>Both initially missed joiner rotation. Codex fixed presentation and inverse input, then proved it with a test and framebuffer. Claude remains unrotated, and simultaneous remote drawing crashes on device.</p>
+          </div>
+          <div class="phase-summary">
+            <div><h3>iOS brush width</h3><span class="status codex">Codex approach stronger</span></div>
+            <p>Claude's pressure-only path currently produces dots but not dragged lines on the observed iOS build. Codex added native contact width, fixed one Web compatibility regression, then iterated mainly on feel—not on rejecting the approach.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-hull" aria-labelledby="integration-title">
+      <div class="band-inner">
+        <div class="eyebrow">The recurring pattern</div>
+        <h2 class="integration-quote" id="integration-title">The developer repeatedly became <span>the integration test.</span></h2>
+        <p class="integration-caption">Claude usually identified the right concerns in design. A human playing the build had to reveal where those concerns had not survived the trip through UI, engine geometry, network flow, and device input.</p>
+        <div class="failure-sequence" aria-label="Claude integration failures reported by the developer">
+          <article class="failure"><div class="tag">Render</div><h3>Black canvas</h3><p>The reported visual check passed while the actual device showed an off-black screen.</p></article>
+          <article class="failure"><div class="tag">Presentation</div><h3>Gray rock, no stars</h3><p>The drawing preview discarded the game's textures and background until device feedback.</p></article>
+          <article class="failure"><div class="tag">Requirement</div><h3>Multitouch omitted</h3><p>A requirement present in both the user request and Claude's own design needed a reminder.</p></article>
+          <article class="failure"><div class="tag">Network flow</div><h3>Empty Uplink match</h3><p>The separate network launch path skipped authoring and started the game on an empty board.</p></article>
+          <article class="failure"><div class="tag">Co-edit</div><h3>Rotation + crash</h3><p>The joiner still sees the wrong orientation; simultaneous remote drawing crashes.</p></article>
+          <article class="failure"><div class="tag">Device input</div><h3>iOS drag regression</h3><p>At the latest observed Claude build, taps make dots while dragged strokes do not draw lines.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" id="craft" aria-labelledby="craft-title">
+      <div class="band-inner">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Engineering craft</div>
+            <h2 id="craft-title">Cleaner to review. Cleaner to extend.</h2>
+          </div>
+          <p>The developer's preference for Codex was not only about bugs. The plan, pull request, comments, app integration, and ownership boundaries all demanded less effort from the next person reading the work.</p>
+        </div>
+
+        <div class="craft-rows">
+          <div class="craft-row">
+            <div class="craft-label">Plan</div>
+            <div class="craft-side"><strong>Claude · 658 lines</strong><p>Embedded Rust, GDScript, exact test bodies, and commands. Precise, but it supplants the design.</p></div>
+            <div class="craft-side codex"><strong>Codex · 193 lines</strong><p>Stages, checklists, file ownership, and a conflict map designed to complement the spec.</p></div>
+          </div>
+          <div class="craft-row">
+            <div class="craft-label">App integration</div>
+            <div class="craft-side"><strong>Claude · +58 lines</strong><p>App probes geometry, owns the draw lifecycle, polls frames, and writes settings internals.</p></div>
+            <div class="craft-side codex"><strong>Codex · +24 lines</strong><p>App delegates to a dedicated flow object with a small public surface.</p></div>
+          </div>
+          <div class="craft-row">
+            <div class="craft-label">Comments</div>
+            <div class="craft-side"><strong>Claude · ~23 / 100 lines</strong><p>Mostly meaningful “why” notes, but dense enough to compete with the implementation.</p></div>
+            <div class="craft-side codex"><strong>Codex · ~2–5 / 100 lines</strong><p>Names carry most of the explanation; a few subtle invariants could use more context.</p></div>
+          </div>
+          <div class="craft-row">
+            <div class="craft-label">Pull request</div>
+            <div class="craft-side"><strong>Claude</strong><p>Long prose organized by subsystem.</p></div>
+            <div class="craft-side codex"><strong>Codex</strong><p>Short sections and bullets: Summary, Design, Decisions, Verification.</p></div>
+          </div>
+        </div>
+
+        <blockquote class="field-note">
+          <p>“Codex is using cleaner patterns.”</p>
+          <footer>The developer's architectural judgment</footer>
+        </blockquote>
+
+        <div class="architecture" aria-label="Architecture comparison">
+          <section>
+            <h3>Claude</h3>
+            <div class="flow">
+              <div class="node hot">BoardDrawScreen · 844 lines<small>input · touch state · engine painting · preview · controls · persistence UI · network mirroring</small></div>
+              <div class="arrow">↓</div>
+              <div class="node">BoardDrawModel · 127 lines<small>texture identity only</small></div>
+              <div class="arrow">↓</div>
+              <div class="node hot">app.gd<small>geometry probing · polling · settings writes</small></div>
+            </div>
+          </section>
+          <section>
+            <h3>Codex</h3>
+            <div class="flow">
+              <div class="node clean">CustomBoardEditor<small>input and presentation</small></div>
+              <div class="arrow">↓ operation vocabulary ↓</div>
+              <div class="node clean">CustomBoardDraft<small>pure coverage · components · textures · serialization</small></div>
+              <div class="arrow">↙　　　　　　　　　↘</div>
+              <div class="node clean">Flow + network coordinator<small>screen lifecycle · host ordering · session boundary</small></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-quiet" id="tests" aria-labelledby="tests-title">
+      <div class="band-inner">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Test design</div>
+            <h2 id="tests-title">The strongest difference is semantic</h2>
+          </div>
+          <p>Both suites are substantial and overlap on the core. Codex's unique assertions line up better with the bugs that make remote co-editing fail in production.</p>
+        </div>
+        <div class="test-grid">
+          <section class="test-column">
+            <h3>Claude uniquely covers</h3>
+            <ul class="test-list">
+              <li>Fractional rim cells inherit the asteroid's texture.</li>
+              <li>A rotated local-two-player toggle is hit in transformed space.</li>
+              <li>The richer recent/saved-library semantics.</li>
+            </ul>
+          </section>
+          <section class="test-column codex">
+            <h3>Codex uniquely covers</h3>
+            <ul class="test-list">
+              <li>Joiner board rotation and inverse touch mapping together.</li>
+              <li>Byte-identical host/joiner convergence with separate touch IDs.</li>
+              <li>Letterbox and pillarbox input mapping.</li>
+              <li>Snapshot-zero isolation of the joiner's local settings.</li>
+              <li>Transport loss during authoring.</li>
+              <li>Atomic persistence, backup, and corrupt-entry recovery.</li>
+            </ul>
+          </section>
+        </div>
+        <div class="test-warning"><strong>The key weakness:</strong> Claude's remote co-draw test injects strokes after screen-to-board mapping and compares only the number of solid cells. Two different boards can have equal area, so that assertion cannot prove convergence or catch the unrotated joiner.</div>
+      </div>
+    </section>
+
+    <section class="band" aria-labelledby="numbers-title">
+      <div class="band-inner">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Objective context</div>
+            <h2 id="numbers-title">Volume is not the score</h2>
+          </div>
+          <p>These are the current branch heads inspected. They include different later scope, so the numbers describe shape and maintenance cost—not merit.</p>
+        </div>
+        <div class="metrics">
+          <div class="metric"><div class="metric-label">Commits</div><div class="metric-values"><strong class="claude">33</strong><span>Claude</span><strong>34</strong><span>Codex</span></div></div>
+          <div class="metric"><div class="metric-label">Files changed</div><div class="metric-values"><strong class="claude">57</strong><span>Claude</span><strong>96</strong><span>Codex</span></div><div class="metric-note">Codex includes the native iOS bridge.</div></div>
+          <div class="metric"><div class="metric-label">Insertions</div><div class="metric-values"><strong class="claude">4,488</strong><span>Claude</span><strong>5,284</strong><span>Codex</span></div></div>
+          <div class="metric"><div class="metric-label">Estimated attended time</div><div class="metric-values"><strong class="claude">8.7h</strong><span>Claude</span><strong>4.1h</strong><span>Codex</span></div><div class="metric-note">Directional estimate at earlier comparable cutoffs; later iOS tuning excluded.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="band band-hull" aria-labelledby="bottom-title">
+      <div class="band-inner bottom-line">
+        <div class="eyebrow">Bottom line</div>
+        <h2 id="bottom-title">On this feature, <span>Codex reduced the human burden.</span></h2>
+        <p>Claude delivered strong design reasoning, richer persistence behavior, smooth terrain edges, and valuable tests. But too many requirements were understood in the abstract and lost at integration time. Codex produced the cleaner system, the stronger tests on the riskiest behavior, and the build the developer trusted more.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>Driftfire agent comparison · evidence snapshot 2026-08-19</div>
+      <div class="footer-links">
+        <a href="analysis.md">Full analysis</a>
+        <a href="data.json">Machine-readable data</a>
+        <a href="https://github.com/carlgieringer/driftfire/pull/596">Claude PR #596</a>
+        <a href="https://github.com/carlgieringer/driftfire/pull/598">Codex PR #598</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const tabs = Array.from(document.querySelectorAll("[role='tab']"));
+    const panels = Array.from(document.querySelectorAll("[role='tabpanel']"));
+
+    function activateTab(selected) {
+      tabs.forEach((tab) => {
+        const active = tab === selected;
+        tab.setAttribute("aria-selected", String(active));
+        tab.tabIndex = active ? 0 : -1;
+      });
+      panels.forEach((panel) => {
+        const active = panel.id === selected.getAttribute("aria-controls");
+        panel.hidden = !active;
+        panel.classList.toggle("active", active);
+      });
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => activateTab(tab));
+      tab.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        const next = tabs[(index + direction + tabs.length) % tabs.length];
+        activateTab(next);
+        next.focus();
+      });
+    });
+  </script>
+</body>
+</html>
