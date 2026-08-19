@@ -473,6 +473,21 @@
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
+    .craft-side.claude-winner strong::after {
+      content: "  winner";
+      color: var(--burn-soft);
+      font-family: var(--utility);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .craft-row.neither .craft-label::after {
+      content: "neither wins";
+      display: block;
+      margin-top: 5px;
+      color: var(--gold);
+      font-size: 0.65rem;
+    }
 
     .architecture {
       margin-top: 52px;
@@ -606,6 +621,7 @@
       font-size: 0.82rem;
     }
     .footer-links { display: flex; flex-wrap: wrap; gap: 14px 22px; }
+    .footer-note { margin-top: 8px; max-width: 440px; font-size: 0.72rem; }
 
     @media (max-width: 900px) {
       body { font-size: 17px; }
@@ -854,6 +870,16 @@
             <div class="craft-side"><strong>Claude</strong><p>Long prose organized by subsystem.</p></div>
             <div class="craft-side codex"><strong>Codex</strong><p>Short sections and bullets: Summary, Design, Decisions, Verification.</p></div>
           </div>
+          <div class="craft-row">
+            <div class="craft-label">Engine fidelity</div>
+            <div class="craft-side claude-winner"><strong>Claude</strong><p>Reuses <code>DestructibleField</code> painting and preserves antialiased fractional edges.</p></div>
+            <div class="craft-side"><strong>Codex</strong><p>Its pure authoring rasterizer is easier to test, but must stay faithful to the match terrain.</p></div>
+          </div>
+          <div class="craft-row neither">
+            <div class="craft-label">Initial UI</div>
+            <div class="craft-side"><strong>Claude</strong><p>Rough and partly nonfunctional.</p></div>
+            <div class="craft-side"><strong>Codex</strong><p>Rough until redirected toward the existing settings patterns.</p></div>
+          </div>
         </div>
 
         <blockquote class="field-note">
@@ -901,7 +927,6 @@
             <ul class="test-list">
               <li>Fractional rim cells inherit the asteroid's texture.</li>
               <li>A rotated local-two-player toggle is hit in transformed space.</li>
-              <li>The richer recent/saved-library semantics.</li>
             </ul>
           </section>
           <section class="test-column codex">
@@ -949,10 +974,16 @@
 
   <footer class="footer">
     <div class="footer-inner">
-      <div>Driftfire agent comparison · evidence snapshot 2026-08-19</div>
+      <div>
+        Driftfire agent comparison · evidence snapshot 2026-08-19
+        <div class="footer-note">Codex is an OpenAI product; its icon is used for identification. Bundled fonts are licensed under the SIL Open Font License 1.1.</div>
+      </div>
       <div class="footer-links">
         <a href="analysis.md">Full analysis</a>
         <a href="data.json">Machine-readable data</a>
+        <a href="assets/OFL-Audiowide.txt">Audiowide license</a>
+        <a href="assets/OFL-ChakraPetch.txt">Chakra Petch license</a>
+        <a href="assets/OFL-Exo2.txt">Exo 2 license</a>
         <a href="https://github.com/carlgieringer/driftfire/pull/596">Claude PR #596</a>
         <a href="https://github.com/carlgieringer/driftfire/pull/598">Codex PR #598</a>
       </div>

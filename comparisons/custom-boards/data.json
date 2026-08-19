@@ -2,6 +2,7 @@
   "title": "Same brief, different burden",
   "subtitle": "Claude Opus 4.8 vs Codex gpt-5.6-sol on Driftfire custom boards",
   "snapshot_date": "2026-08-19",
+  "authority": "analysis.md is authoritative; this file is its structured companion and index.html is its public presentation.",
   "verdict": {
     "winner": "codex",
     "headline": "Codex won this run",
@@ -181,26 +182,32 @@
   "quotes": [
     {
       "topic": "verdict",
+      "speaker": "developer",
       "text": "After this experience, Codex is clearly the winner, and it's going to become my primary model going forward."
     },
     {
       "topic": "integration",
+      "speaker": "evaluator, explicitly endorsed by developer",
       "text": "The user repeatedly became the integration test."
     },
     {
       "topic": "pr",
+      "speaker": "developer",
       "text": "Codex's PR description is better organized. I like the bullet points and the structure and the succinctness."
     },
     {
       "topic": "plans",
+      "speaker": "developer",
       "text": "Codex's plan seems more like a high-level checklist ... it should be read together with the design, whereas Claude's plan seems to supplant the design."
     },
     {
       "topic": "comments",
+      "speaker": "developer",
       "text": "Codex uses a lot fewer comments, which I like because its code speaks for itself."
     },
     {
       "topic": "architecture",
+      "speaker": "developer",
       "text": "Codex is using cleaner patterns."
     }
   ],

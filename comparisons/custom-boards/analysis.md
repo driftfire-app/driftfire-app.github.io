@@ -86,7 +86,7 @@ Yet its implementation initially resolved while drawing, omitted local multitouc
 
 Codex showed the opposite pattern more often. It began with the engine-independent draft model and red-first tests, then persistence, style wiring, the editor, the app flow, and finally network coordination. Its framebuffer run exposed that an input-mapping test exercised an unused helper and could pass while production was wrong. It replaced the test before handoff. Reviewers still found defects, but the agent used them as part of its delivery loop rather than relying as heavily on the developer's device testing to discover the basic integration.
 
-> "The user repeatedly became the integration test." This is sharp, but accurate: Claude's design usually named the right requirements; a human playing the build had to reveal where they had not survived integration.
+> Evaluator summary, explicitly endorsed by the developer: "The user repeatedly became the integration test." This is sharp, but accurate: Claude's design usually named the right requirements; a human playing the build had to reveal where they had not survived integration.
 
 ## Engineering craft
 
@@ -175,4 +175,4 @@ The result does not establish a universal model ranking. It does establish the o
 - Claude implementation: PR #596, branch `feat/custom-drawn-boards`, head `797c7f9a`.
 - Codex implementation: PR #598, branch `feat/custom-drawn-boards-codex`, head `d1166ded`.
 - Comparison sources: both raw CLI session logs, both diffs, plans, PR descriptions/comments, reviewer findings, and the developer's on-device reports.
-- Machine-readable facts and verdicts: `data.json` beside this document.
+- This narrative is the authoritative comparison. `data.json` is its structured companion; `index.html` is its public presentation.
