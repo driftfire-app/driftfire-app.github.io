@@ -48,7 +48,8 @@
       --green: #5fe39b;
       --red: #ff6477;
       --shadow: rgba(0, 0, 0, 0.45);
-      --display: "Audiowide", "Arial Black", sans-serif;
+      --display: "Exo 2", system-ui, sans-serif;
+      --wordmark: "Audiowide", "Arial Black", sans-serif;
       --body: "Exo 2", system-ui, sans-serif;
       --utility: "Chakra Petch", ui-monospace, monospace;
       --content: 1180px;
@@ -111,7 +112,7 @@
       gap: 10px;
       color: var(--white);
       text-decoration: none;
-      font-family: var(--display);
+      font-family: var(--wordmark);
       font-size: 0.82rem;
       letter-spacing: 0.06em;
     }
@@ -185,7 +186,7 @@
       font-family: var(--display);
       font-size: clamp(2.8rem, 7.8vw, 6.9rem);
       line-height: 0.96;
-      font-weight: 400;
+      font-weight: 750;
       letter-spacing: 0;
       text-shadow: 0 8px 42px var(--shadow);
     }
@@ -284,7 +285,7 @@
     .section-head h2 {
       margin-top: 10px;
       font-family: var(--display);
-      font-weight: 400;
+      font-weight: 750;
       font-size: clamp(2rem, 4.8vw, 4rem);
       line-height: 1.04;
     }
@@ -306,7 +307,7 @@
     .verdict-copy h2 {
       font-family: var(--display);
       font-size: clamp(2.2rem, 5vw, 4.6rem);
-      font-weight: 400;
+      font-weight: 750;
       line-height: 1.02;
     }
     .verdict-copy h2 span { color: var(--gold); }
@@ -414,7 +415,7 @@
       max-width: 1000px;
       font-family: var(--display);
       font-size: clamp(2rem, 5.2vw, 4.7rem);
-      font-weight: 400;
+      font-weight: 750;
       line-height: 1.13;
       color: var(--white);
     }
@@ -535,6 +536,56 @@
       letter-spacing: 0.09em;
     }
 
+    .delegate-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .delegate-card {
+      border-top: 3px solid var(--burn);
+      padding-top: 22px;
+    }
+    .delegate-card.codex-card { border-color: var(--ion); }
+    .delegate-card h3 {
+      font-family: var(--utility);
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+    .delegate-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 20px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .delegate-stat { padding: 18px 14px; background: var(--void-soft); }
+    .delegate-stat strong { display: block; font-size: 2rem; line-height: 1; }
+    .delegate-stat span {
+      display: block;
+      margin-top: 8px;
+      color: var(--muted);
+      font-family: var(--utility);
+      font-size: 0.67rem;
+      line-height: 1.35;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .delegate-flow {
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+    .delegate-flow strong { color: var(--white); }
+    .delegate-takeaway {
+      margin-top: 34px;
+      padding: 22px 24px;
+      border-left: 3px solid var(--gold);
+      background: rgba(246, 201, 69, 0.05);
+      color: var(--muted);
+    }
+    .delegate-takeaway strong { color: var(--gold); }
+
     .test-grid {
       display: grid;
       grid-template-columns: 0.92fr 1.08fr;
@@ -600,7 +651,7 @@
     .bottom-line h2 {
       font-family: var(--display);
       font-size: clamp(2.4rem, 6vw, 5.5rem);
-      font-weight: 400;
+      font-weight: 750;
       line-height: 1.04;
     }
     .bottom-line h2 span { color: var(--gold); }
@@ -662,7 +713,7 @@
       .hero-deck { font-size: 1rem; }
       .band-inner { padding: 64px 16px; }
       .phase-summary { grid-template-columns: 1fr; gap: 8px; }
-      .failure-sequence, .architecture, .test-grid, .metrics { grid-template-columns: 1fr; }
+      .failure-sequence, .architecture, .delegate-grid, .test-grid, .metrics { grid-template-columns: 1fr; }
       .craft-row { grid-template-columns: 1fr; gap: 10px; }
       .craft-side { padding-left: 16px; border-left: 1px solid var(--line); }
       .integration-quote { padding-top: 24px; }
@@ -687,6 +738,7 @@
         <a href="#setup">Setup</a>
         <a href="#evidence">Evidence</a>
         <a href="#craft">Craft</a>
+        <a href="#delegation">Agents</a>
         <a href="#tests">Tests</a>
         <a href="analysis.md">Full analysis</a>
       </div>
@@ -748,7 +800,7 @@
           <article class="setup-item">
             <div class="setup-index">Environment</div>
             <h3>Independent worktrees</h3>
-            <p>Each agent implemented on its own branch, opened a pull request, and used the project's mandatory Claude and Codex reviewers.</p>
+            <p>Each agent implemented on its own branch and opened a pull request. Both used heavy review loops, but only Claude's branch crossed model families.</p>
           </article>
           <article class="setup-item">
             <div class="setup-index">Measure</div>
@@ -756,7 +808,7 @@
             <p>The useful question was not who emitted more code, but what survived into a working build without human correction.</p>
           </article>
         </div>
-        <p class="caveat"><strong>Caveat:</strong> this is an evidence-backed case study, not a benchmark. The models, effort settings, environments, start times, reviewer influence, and later product conversations were not matched.</p>
+        <p class="caveat"><strong>Caveat:</strong> this is an evidence-backed case study, not a benchmark. Claude's primary ran Opus 4.8 at high effort; Codex's primary ran gpt-5.6-sol at medium. Setting Codex to high would nominally match the label, but not calibrate equal cross-vendor compute—and the supporting-agent budgets also differed. Environments, start times, reviewer influence, and later product conversations were not matched.</p>
       </div>
     </section>
 
@@ -909,6 +961,44 @@
             </div>
           </section>
         </div>
+      </div>
+    </section>
+
+    <section class="band band-hull" id="delegation" aria-labelledby="delegation-title">
+      <div class="band-inner">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Agent orchestration</div>
+            <h2 id="delegation-title">Different delegation doctrine.</h2>
+          </div>
+          <p>Neither primary model handed production code to another agent. Claude used subagents for parallel reconnaissance and cross-model review. Codex kept implementation centralized and saturated the branch with same-model review passes.</p>
+        </div>
+
+        <div class="delegate-grid">
+          <article class="delegate-card">
+            <h3>Claude · diversify</h3>
+            <div class="delegate-stats">
+              <div class="delegate-stat"><strong>10</strong><span>native Agent launches</span></div>
+              <div class="delegate-stat"><strong>4</strong><span>Opus explorers</span></div>
+              <div class="delegate-stat"><strong>6 + 6</strong><span>Sonnet + Codex reviews</span></div>
+            </div>
+            <p class="delegate-flow"><strong>Flow:</strong> three Opus 4.8 explorers started in parallel → Opus implemented alone → fresh Sonnet 5 xhigh and gpt-5.6-sol medium reviewers checked six milestones.</p>
+            <p class="delegate-flow"><strong>Material catches:</strong> mismatched match geometry, rotated-toggle hit testing, and a saved-board deletion path.</p>
+          </article>
+
+          <article class="delegate-card codex-card">
+            <h3>Codex · repeat</h3>
+            <div class="delegate-stats">
+              <div class="delegate-stat"><strong>1</strong><span>persistent spawned reviewer</span></div>
+              <div class="delegate-stat"><strong>26</strong><span>assignments to that reviewer</span></div>
+              <div class="delegate-stat"><strong>32</strong><span>fresh Codex CLI reviews</span></div>
+            </div>
+            <p class="delegate-flow"><strong>Flow:</strong> gpt-5.6-sol implemented alone → one continuing gpt-5.6-sol medium reviewer checked successive commits and fixes → fresh same-model CLI reviews supplied a second pass.</p>
+            <p class="delegate-flow"><strong>Boundary:</strong> zero exploration agents and zero implementation agents. The automatic low-effort approval guardian is infrastructure and is excluded.</p>
+          </article>
+        </div>
+
+        <p class="delegate-takeaway"><strong>Interpretation:</strong> Claude had greater role and model diversity. Codex had much higher review cadence. Codex's final quality reflects a strong primary implementation plus a relentless review/fix loop—not an unaided first pass. The attended-time estimate measures wall clock, not aggregate reviewer inference.</p>
       </div>
     </section>
 
