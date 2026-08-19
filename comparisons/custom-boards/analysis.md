@@ -32,9 +32,10 @@ The runs ceased to be identical after that checkpoint. The agents asked differen
 
 This was also not a blind benchmark:
 
-- Claude Opus 4.8 and Codex gpt-5.6-sol at medium effort are not matched tiers.
+- The primary Claude Opus 4.8 session ran at high effort; the primary Codex gpt-5.6-sol session ran at medium. A nominal rerun would launch Codex with `-c model_reasoning_effort='"high"'`, although vendor effort labels do not calibrate equal compute.
+- Matching only the parent setting would still leave a large orchestration difference: Claude used four Opus-high explorers, six Sonnet-xhigh reviewers, and six Codex-medium reviews; Codex used 26 assignments to one persistent Codex-medium reviewer plus 32 fresh Codex-medium reviews.
 - The environments differed, including Codex sandbox friction and a harness change between starts.
-- Both implementations used mandatory Claude and Codex reviewers, so final code is not purely the implementing model's unaided work.
+- Both implementations were heavily reviewer-influenced, so neither final branch is the primary model's unaided work. Claude's branch received Sonnet and Codex reviews; Codex's two reviewer paths both ran gpt-5.6-sol.
 - Claude started first. Its code could be influenced by Codex review, and the branches accumulated different follow-up scope.
 - One feature, one developer, and one run cannot rank the models in general.
 
@@ -115,6 +116,22 @@ Claude has a defensible tradeoff: it paints through the match's existing `Destru
 Claude's main feature files contain roughly 23 comments per 100 lines; Codex's contain roughly 2–5. Claude's comments are usually substantive, not filler, but the volume competes with the code. Codex more closely matches the project's preference to explain only the non-obvious, although a few draft invariants could use more explanation.
 
 > "Codex uses a lot fewer comments, which I like because its code speaks for itself."
+
+## Delegation: diversity versus review saturation
+
+The raw sessions expose two very different orchestration strategies. These counts distinguish an agent launch from an assignment to an already-running agent, and they exclude Codex's automatic low-effort approval guardian because neither primary model chose or tasked it.
+
+**Claude diversified the work.** Opus made 10 native `Agent` launches:
+
+- Four `Explore` agents ran on Claude Opus 4.8 at high effort. Three started in parallel at the beginning, mapping the Rust terrain surface, style/settings plumbing, and input/spawn geometry; a fourth later mapped the match-launch seam.
+- Six fresh `feature-dev:code-reviewer` agents ran on Claude Sonnet 5 at xhigh effort. They reviewed the main stage, the geometry fix, persistence/polish, multitouch, Uplink co-draw, and switch/brush changes.
+- The same six milestones also received separate `codex review` passes from gpt-5.6-sol at medium effort.
+
+This gave Claude genuine role and model diversity: Opus for reconnaissance and implementation, Sonnet for focused review, and Codex as the second reviewer. The reviewers found material defects, including mismatched board/spawn geometry, a rotated-toggle hit-test error, and a persistence path that could un-keep and later delete a saved board. Opus itself still wrote the implementation and applied the fixes; no subagent owned a production-code track.
+
+**Codex concentrated on review.** It called `spawn_agent` once, creating one persistent reviewer—nickname `Godel`—on the same gpt-5.6-sol model and medium effort as the parent. It then sent that reviewer 25 follow-up tasks: 26 review assignments to one continuing context. In parallel, the repo workflow launched 32 fresh `codex review` subprocesses, also gpt-5.6-sol at medium effort. Those passes repeatedly reviewed coherent commits, reviewed fixes, and ran focused tests. No Codex subagent performed reconnaissance or implementation. The plan explicitly reserved parallel implementation for separately requested worktrees, so the parent remained the sole implementer.
+
+That makes the comparison more interesting than "Claude used subagents; Codex did not." Claude used broader delegation and cross-model disagreement. Codex used far more review iterations, but almost no model diversity. The final Codex quality is therefore evidence for a strong primary implementation plus a relentless review/fix loop—not an unaided first pass. The earlier attended-time estimate also measures wall-clock interaction, not aggregate model inference across these concurrent and repeated reviewers.
 
 ## Tests: overlap and meaningful differences
 

@@ -13,6 +13,7 @@
     "claude": {
       "display": "Claude",
       "model": "Opus 4.8",
+      "effort": "high",
       "harness": "Claude Code",
       "branch": "feat/custom-drawn-boards",
       "pr": 596,
@@ -148,6 +149,46 @@
       "winner": "neither"
     }
   ],
+  "delegation": {
+    "counting_note": "Agent launches, assignments to a persistent agent, and fresh CLI review processes are distinct. Automatic Codex approval guardians are excluded.",
+    "implementation_delegated": {
+      "claude": false,
+      "codex": false
+    },
+    "claude": {
+      "native_agent_launches": 10,
+      "explore_agents": 4,
+      "explore_model": "claude-opus-4-8",
+      "explore_effort": "high",
+      "initial_parallel_explorers": 3,
+      "fresh_code_reviewer_agents": 6,
+      "reviewer_model": "claude-sonnet-5",
+      "reviewer_effort": "xhigh",
+      "separate_codex_cli_reviews": 6,
+      "codex_review_model": "gpt-5.6-sol",
+      "codex_review_effort": "medium",
+      "strategy": "parallel reconnaissance, sole-primary implementation, then fresh cross-model milestone reviews",
+      "notable_reviewer_catches": [
+        "board-draw safety geometry differed from the match",
+        "rotated top toggle used the wrong hit-test rectangle",
+        "replaying a kept board could un-keep it and expose it to deletion"
+      ]
+    },
+    "codex": {
+      "spawn_agent_calls": 1,
+      "persistent_reviewer_assignments": 26,
+      "followup_task_calls": 25,
+      "persistent_reviewer_model": "gpt-5.6-sol",
+      "persistent_reviewer_effort": "medium",
+      "fresh_codex_cli_reviews": 32,
+      "cli_review_model": "gpt-5.6-sol",
+      "cli_review_effort": "medium",
+      "explore_agents": 0,
+      "implementation_agents": 0,
+      "strategy": "sole-primary implementation with one persistent same-model reviewer and frequent fresh same-model CLI reviews"
+    },
+    "interpretation": "Claude had greater role and model diversity; Codex had much higher review cadence. Codex's final quality reflects an intensive review/fix loop, not an unaided first pass."
+  },
   "tests": {
     "shared": [
       "shape identity and texture cycling",
@@ -212,9 +253,10 @@
     }
   ],
   "caveats": [
-    "The model tiers and effort settings were not matched.",
+    "The primary Claude session ran Opus 4.8 at high effort; the primary Codex session ran gpt-5.6-sol at medium. Setting Codex to high would be a nominal match, not proof of equal cross-vendor compute.",
+    "The supporting-agent budgets were also unmatched: Claude diversified across explorers and two reviewer models, while Codex used many more same-model review passes.",
     "The opening prompt was identical, but later product answers and requests differed.",
-    "Both agents used Claude and Codex reviewers, so final work is not unaided.",
+    "Both branches were heavily reviewer-influenced. Claude received cross-model Sonnet and Codex review; Codex used two gpt-5.6-sol reviewer paths.",
     "The environments and start times differed.",
     "This is one feature, one developer, and one run—not a general benchmark.",
     "Current heads include different later scope and should not be compared by diff size."
